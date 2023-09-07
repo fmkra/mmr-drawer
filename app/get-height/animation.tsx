@@ -58,9 +58,9 @@ export function Animation({ size: s, node }: { size: number; node: number }) {
             <>
                 <p className="my-2">
                     First, let&apos;s notice that it&apos;s easy to calculate getHeight for{' '}
-                    <Hovered f={setLeftmostLit}>left-most</Hovered> vertices. They always have <L>$2^n-1$</L> index and
-                    height <L>$n-1$</L>, so to calculate their heights we can just take length of the bit representation
-                    of the index and subtract 1.
+                    <Hovered f={setLeftmostLit}>left-most</Hovered> vertices. They always have index <L>$2^n-1$</L> and
+                    height <L>$n-1$</L>, so to calculate their height, we can just take length of the bit representation
+                    of the index and subtract <L>$1$</L>.
                 </p>
                 <p className="my-2">
                     To generalize this, we need to somehow jump from the given node to the left-most node without
@@ -79,8 +79,8 @@ export function Animation({ size: s, node }: { size: number; node: number }) {
                 <p className="my-2">
                     So to achieve that, we will start from the root node. Let&apos;s say its index is <L>$2^n-1$</L>.
                     Now, if the given node is in the right subtree, we need to jump to the corresponding node in the
-                    left subtree. To do that, we need to use the observation that in the left subtree, the indices are
-                    in range <L>{`$[1;2^{n-1}-1]$`}</L>, and in the right subtree, the indices are in range{' '}
+                    left subtree. To do that, we need to use the observation that in the left subtree, indices are in
+                    range <L>{`$[1;2^{n-1}-1]$`}</L>, and in the right subtree, indices are in range{' '}
                     <L>{`$[2^{n-1};2^n-2]$`}</L>. This also means that the difference between corresponding nodes in the
                     left and right subtrees is <L>{`$2^{n-1}-1$`}</L>. So to jump to the left subtree, we need to
                     subtract that from the current index. If the given node is already in the left subtree, we
@@ -93,13 +93,13 @@ export function Animation({ size: s, node }: { size: number; node: number }) {
                     {node > virtual.size / 2 ? (
                         <L>{`$[${Math.ceil(virtual.size / 2)}; ${
                             virtual.size - 1
-                        }]$ it means that current node is in the right subtree, so we need to subtract $${Math.floor(
+                        }]$ it means that the current node is in the right subtree, so we need to subtract $${Math.floor(
                             virtual.size / 2
                         )}$ to jump to the corresponding node in the left subtree.`}</L>
                     ) : (
                         <L>{`$[1;${Math.floor(
                             virtual.size / 2
-                        )}]$ it means that current node is already in the left subtree, so we don't need to do anything.`}</L>
+                        )}]$ it means that the current node is already in the left subtree, so we don't need to do anything.`}</L>
                     )}
                 </p>
                 <button
