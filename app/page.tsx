@@ -28,18 +28,16 @@ export default function Home() {
                     </label>
                 </div>
             </div>
-            <div className="w-max overflow-x-auto overflow-y-hidden">
-                <Drawer
-                    node={root}
-                    size={size}
-                    showVirtual={showVirtual}
-                    colorSettings={{
-                        standard: '#fff',
-                        virtual: '#f00',
-                        peak: '#0f0',
-                    }}
-                />
-            </div>
+            <Drawer
+                node={root}
+                size={size}
+                showVirtual={showVirtual}
+                colorSettings={{
+                    standard: '#fff',
+                    virtual: '#f00',
+                    peak: '#0f0',
+                }}
+            />
         </div>
     )
 }
