@@ -12,6 +12,7 @@ interface DrawerProps {
     size: number
     showVirtual: boolean
     colorSettings: ColorSettings
+    overwriteNodeColor?: Record<number, string>
     _isParentVirtual?: boolean
 }
 
@@ -21,15 +22,16 @@ export function Drawer({ node, ...props }: DrawerProps) {
 
     const ipv = props._isParentVirtual ?? true
     const colorType = isVirtual ? 'virtual' : ipv ? 'peak' : 'standard'
-    const color = props.colorSettings[colorType]
-    const lineColor = colorType == 'peak' ? props.colorSettings['standard'] : color
+    const overwrittenColor = props.overwriteNodeColor?.[node.index]
+    const nodeColor = overwrittenColor ?? props.colorSettings[colorType]
+    const lineColor = colorType == 'peak' ? props.colorSettings['standard'] : props.colorSettings[colorType]
 
     return (
         <div className="w-full grid grid-cols-[1fr_3rem_1fr] grid-rows-[auto_3rem_auto]">
             <div />
             <div
                 className="flex items-center justify-center rounded-full aspect-square bg-black relative z-10"
-                style={{ borderColor: color, borderWidth: showNode ? '3px' : '0px' }}
+                style={{ borderColor: nodeColor, borderWidth: showNode ? '3px' : '0px' }}
             >
                 <span className="text">{showNode && node.index}</span>
             </div>

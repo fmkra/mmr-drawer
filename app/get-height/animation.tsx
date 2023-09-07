@@ -10,10 +10,11 @@ export function Animation({ size: s, node }: { size: number; node: number }) {
             node={root}
             size={size}
             showVirtual={false}
+            overwriteNodeColor={{ [node]: '#0f0' }}
             colorSettings={{
                 standard: '#fff',
                 virtual: '#f00',
-                peak: '#0f0',
+                peak: '#fff',
             }}
         />
     )
