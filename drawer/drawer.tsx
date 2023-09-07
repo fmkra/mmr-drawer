@@ -33,7 +33,7 @@ export function Drawer({ node, ...props }: DrawerProps) {
                 className="flex items-center justify-center rounded-full aspect-square bg-black relative z-10"
                 style={{ borderColor: nodeColor, borderWidth: showNode ? '3px' : '0px' }}
             >
-                <span className="text">{showNode && node.index}</span>
+                <span>{showNode && node.index}</span>
             </div>
             <div />
 

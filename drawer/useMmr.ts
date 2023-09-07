@@ -29,5 +29,13 @@ export function useMmr(initialLeafCount: number) {
         setSize(leafIndexToMmrIndex(leafCount + 2) - 1)
     }
 
-    return { root, size, append }
+    return {
+        root,
+        size,
+        append,
+        virtual: {
+            leafCount: leafCapacity,
+            size: sizeCapacity,
+        },
+    }
 }
