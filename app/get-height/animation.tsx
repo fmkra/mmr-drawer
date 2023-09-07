@@ -179,9 +179,10 @@ export function Animation({ size: s, node }: { size: number; node: number }) {
                     peak: '#fff',
                 }}
             />
-            <div className="mx-auto mb-8 max-w-3xl text-justify">
+
+            <div className="mx-auto mb-8 px-2 max-w-3xl text-justify">
                 {page > 0 && (
-                    <div className="flex gap-8 justify-around my-4">
+                    <div className="flex flex-wrap gap-4 justify-around my-4">
                         {currentNode != subtreeRoot && (
                             <div className="flex items-center gap-2">
                                 <div className="w-10 h-10 flex items-center justify-center rounded-full border-[3px] border-[#ff0] aspect-square bg-black relative z-10">

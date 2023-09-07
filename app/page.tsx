@@ -28,6 +28,7 @@ export default function Home() {
                     </label>
                 </div>
             </div>
+
             <Drawer
                 node={root}
                 size={size}
