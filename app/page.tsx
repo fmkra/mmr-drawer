@@ -1,12 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import Drawer from './drawer'
-import { useMMr } from './useMmr'
+import { Drawer, useMmr } from '@/drawer'
 
 export default function Home() {
     const [showVirtual, setShowVirtual] = useState(false)
-    const { root, append, size } = useMMr(6)
+    const { root, append, size } = useMmr(6)
 
     return (
         <div>

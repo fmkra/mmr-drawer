@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { Node, getTree } from './node'
 import { bitLength, leafIndexToMmrIndex } from './utils'
 
-export function useMMr(initialLeafCount: number) {
+export function useMmr(initialLeafCount: number) {
     const [leafCount, setLeafCount] = useState(() => (initialLeafCount < 1 ? 1 : initialLeafCount))
     const [size, setSize] = useState(() => leafIndexToMmrIndex(leafCount + 1) - 1)
     const [height, setHeight] = useState(() => (leafCount == 1 ? 0 : bitLength(leafCount - 1)))
