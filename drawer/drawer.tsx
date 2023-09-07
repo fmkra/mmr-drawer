@@ -43,7 +43,7 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
         <div className="w-full grid grid-cols-[1fr_3rem_1fr] grid-rows-[auto_3rem_auto]">
             <div />
             <div
-                className="flex items-center justify-center rounded-full aspect-square bg-black relative z-10"
+                className="flex items-center justify-center rounded-full aspect-square bg-black relative z-10 transition-colors"
                 style={{ borderColor: nodeColor, borderWidth: showNode ? '3px' : '0px' }}
             >
                 <span>{showNode && node.index}</span>
