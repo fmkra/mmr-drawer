@@ -1,10 +1,11 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Node, getTree } from './node';
 import { bitLength, leafIndexToMmrIndex } from './utils';
 
 export function useMmr(initialLeafCount: number) {
+    const leafs = useRef<Node[]>([]);
     const [leafCount, setLeafCount] = useState(() =>
         initialLeafCount < 1 ? 1 : initialLeafCount,
     );
@@ -27,6 +28,7 @@ export function useMmr(initialLeafCount: number) {
                 index: rightSubtree.index + 1,
                 left: root,
                 right: rightSubtree,
+                hash: root.hash + rightSubtree.hash,
             };
             setRoot(newRoot);
             setHeight(height + 1);
@@ -34,7 +36,8 @@ export function useMmr(initialLeafCount: number) {
             setSizeCapacity(2 * sizeCapacity + 1);
         }
         setLeafCount((x) => x + 1);
-        setSize(leafIndexToMmrIndex(leafCount + 2) - 1);
+        const newSize = leafIndexToMmrIndex(leafCount + 2) - 1;
+        setSize(newSize);
     };
 
     return {
@@ -45,5 +48,6 @@ export function useMmr(initialLeafCount: number) {
             leafCount: leafCapacity,
             size: sizeCapacity,
         },
+        _setRoot: setRoot,
     };
 }

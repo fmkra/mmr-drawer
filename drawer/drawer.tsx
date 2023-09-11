@@ -1,5 +1,6 @@
 import { Line } from '@/drawer/line';
-import { Node } from './node';
+import { Node, update } from './node';
+import { bitLength } from './utils';
 
 interface ColorSettings {
     standard: string;
@@ -11,12 +12,14 @@ interface DrawerProps {
     node: Node;
     size: number;
     showVirtual: boolean;
+    hashUpdateRoot?: (root: Node) => void;
     colorSettings: ColorSettings;
     overwriteNodeColor?: Record<number, string>;
 }
 
 interface CustomDrawerProps extends DrawerProps {
     _isParentVirtual?: boolean;
+    _updateHash?: (index: number, hash: string) => void;
 }
 
 export function Drawer(props: DrawerProps) {
@@ -42,6 +45,14 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
             ? props.colorSettings['standard']
             : props.colorSettings[colorType];
 
+    const updateHash =
+        props._updateHash ??
+        ((index, value) => {
+            props.hashUpdateRoot?.(
+                update(node, index, value, 1, (1 << bitLength(props.size)) - 1),
+            );
+        });
+
     return (
         <div className="grid w-full grid-cols-[1fr_3rem_1fr] grid-rows-[auto_3rem_auto]">
             <div />
@@ -53,6 +64,26 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
                 }}
             >
                 <span>{showNode && node.index}</span>
+                {showNode && props.hashUpdateRoot && (
+                    <span className="z-12 group absolute top-12 bg-black p-px text-sm">
+                        {node.hash.substring(0, 6)}...
+                        <input
+                            value={node.hash}
+                            onChange={
+                                (e) =>
+                                    console.log(
+                                        updateHash(node.index, e.target.value),
+                                    )
+                                // props.hash?.update(node.index, e.target.value)
+                            }
+                            className={`absolute bottom-full z-50 hidden max-w-[8rem] rounded border border-white bg-black p-2 group-hover:block ${
+                                node.index == 1
+                                    ? `-left-4`
+                                    : `right-1/2 translate-x-1/2`
+                            }`}
+                        />
+                    </span>
+                )}
             </div>
             <div />
 
@@ -77,6 +108,7 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
                     node={node.left}
                     {...props}
                     _isParentVirtual={isVirtual}
+                    _updateHash={updateHash}
                 />
             ) : (
                 <div />
@@ -86,6 +118,7 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
                 <CustomDrawer
                     node={node.right}
                     {...props}
+                    _updateHash={updateHash}
                     _isParentVirtual={isVirtual}
                 />
             ) : (

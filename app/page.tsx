@@ -5,7 +5,7 @@ import { Drawer, useMmr } from '@/drawer';
 
 export default function Home() {
     const [showVirtual, setShowVirtual] = useState(false);
-    const { root, append, size } = useMmr(6);
+    const { root, append, size, _setRoot } = useMmr(6);
 
     return (
         <div>
@@ -32,6 +32,10 @@ export default function Home() {
             <Drawer
                 node={root}
                 size={size}
+                hashUpdateRoot={(r) => {
+                    console.log('newroot is', r);
+                    _setRoot(r);
+                }}
                 showVirtual={showVirtual}
                 colorSettings={{
                     standard: '#fff',
