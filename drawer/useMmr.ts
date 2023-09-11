@@ -1,11 +1,10 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
-import { Node, getTree } from './node';
+import { Hasher, Node, getTree } from './node';
 import { bitLength, leafIndexToMmrIndex } from './utils';
 
-export function useMmr(initialLeafCount: number) {
-    const leafs = useRef<Node[]>([]);
+export function useMmr(initialLeafCount: number, hasher: Hasher = () => '') {
     const [leafCount, setLeafCount] = useState(() =>
         initialLeafCount < 1 ? 1 : initialLeafCount,
     );
@@ -15,7 +14,7 @@ export function useMmr(initialLeafCount: number) {
     const [height, setHeight] = useState(() =>
         leafCount == 1 ? 0 : bitLength(leafCount - 1),
     );
-    const [root, setRoot] = useState<Node>(() => getTree(1, height));
+    const [root, setRoot] = useState<Node>(() => getTree(1, height, hasher));
     const [leafCapacity, setLeafCapacity] = useState(() => 1 << height);
     const [sizeCapacity, setSizeCapacity] = useState(
         () => leafIndexToMmrIndex(leafCapacity + 1) - 1,
@@ -23,12 +22,12 @@ export function useMmr(initialLeafCount: number) {
 
     const append = () => {
         if (leafCount == leafCapacity) {
-            const rightSubtree = getTree(sizeCapacity + 1, height);
+            const rightSubtree = getTree(sizeCapacity + 1, height, hasher);
             const newRoot = {
                 index: rightSubtree.index + 1,
                 left: root,
                 right: rightSubtree,
-                hash: root.hash + rightSubtree.hash,
+                hash: hasher(root.hash, rightSubtree.hash),
             };
             setRoot(newRoot);
             setHeight(height + 1);
@@ -48,6 +47,9 @@ export function useMmr(initialLeafCount: number) {
             leafCount: leafCapacity,
             size: sizeCapacity,
         },
-        _setRoot: setRoot,
+        drawerHashProp: {
+            updateRoot: setRoot,
+            hasher: hasher,
+        },
     };
 }

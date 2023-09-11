@@ -5,7 +5,13 @@ export interface Node {
     hash: string;
 }
 
-export function getTree(startIndex: number, height: number): Node {
+export type Hasher = (left: string, right: string) => string;
+
+export function getTree(
+    startIndex: number,
+    height: number,
+    hasher: Hasher,
+): Node {
     if (height == 0) {
         return {
             index: startIndex,
@@ -14,13 +20,13 @@ export function getTree(startIndex: number, height: number): Node {
             hash: '0x0',
         };
     }
-    const leftSubtree = getTree(startIndex, height - 1);
-    const rightSubtree = getTree(leftSubtree.index + 1, height - 1);
+    const leftSubtree = getTree(startIndex, height - 1, hasher);
+    const rightSubtree = getTree(leftSubtree.index + 1, height - 1, hasher);
     const rootNode = {
         index: rightSubtree.index + 1,
         left: leftSubtree,
         right: rightSubtree,
-        hash: leftSubtree.hash + rightSubtree.hash,
+        hash: hasher(leftSubtree.hash, rightSubtree.hash),
     };
     return rootNode;
 }
@@ -29,6 +35,7 @@ export function update(
     root: Node,
     index: number,
     value: string,
+    hasher: Hasher,
     left: number,
     right: number,
 ): Node {
@@ -40,24 +47,32 @@ export function update(
     }
     const mid = Math.floor(left + right) / 2;
     if (index < mid) {
-        const newChild = update(root.left as Node, index, value, left, mid - 1);
+        const newChild = update(
+            root.left as Node,
+            index,
+            value,
+            hasher,
+            left,
+            mid - 1,
+        );
         return {
             ...root,
             left: newChild,
-            hash: newChild.hash + (root.right as Node).hash,
+            hash: hasher(newChild.hash, (root.right as Node).hash),
         };
     } else {
         const newChild = update(
             root.right as Node,
             index,
             value,
+            hasher,
             mid,
             right - 1,
         );
         return {
             ...root,
             right: newChild,
-            hash: (root.left as Node).hash + newChild.hash,
+            hash: hasher((root.left as Node).hash, newChild.hash),
         };
     }
 }

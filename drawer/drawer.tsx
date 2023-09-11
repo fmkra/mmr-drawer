@@ -1,5 +1,5 @@
 import { Line } from '@/drawer/line';
-import { Node, update } from './node';
+import { Hasher, Node, update } from './node';
 import { bitLength } from './utils';
 
 interface ColorSettings {
@@ -12,7 +12,10 @@ interface DrawerProps {
     node: Node;
     size: number;
     showVirtual: boolean;
-    hashUpdateRoot?: (root: Node) => void;
+    hash?: {
+        updateRoot: (root: Node) => void;
+        hasher: Hasher;
+    };
     colorSettings: ColorSettings;
     overwriteNodeColor?: Record<number, string>;
 }
@@ -35,6 +38,7 @@ export function Drawer(props: DrawerProps) {
 function CustomDrawer({ node, ...props }: CustomDrawerProps) {
     const isVirtual = node.index > props.size;
     const showNode = props.showVirtual || !isVirtual;
+    const isLeaf = node.left === null && node.right === null;
 
     const ipv = props._isParentVirtual ?? true;
     const colorType = isVirtual ? 'virtual' : ipv ? 'peak' : 'standard';
@@ -48,8 +52,15 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
     const updateHash =
         props._updateHash ??
         ((index, value) => {
-            props.hashUpdateRoot?.(
-                update(node, index, value, 1, (1 << bitLength(props.size)) - 1),
+            props.hash?.updateRoot?.(
+                update(
+                    node,
+                    index,
+                    value,
+                    props.hash.hasher,
+                    1,
+                    (1 << bitLength(props.size)) - 1,
+                ),
             );
         });
 
@@ -64,24 +75,32 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
                 }}
             >
                 <span>{showNode && node.index}</span>
-                {showNode && props.hashUpdateRoot && (
+                {showNode && props.hash && (
                     <span className="z-12 group absolute top-12 bg-black p-px text-sm">
                         {node.hash.substring(0, 6)}...
-                        <input
-                            value={node.hash}
-                            onChange={
-                                (e) =>
-                                    console.log(
-                                        updateHash(node.index, e.target.value),
-                                    )
-                                // props.hash?.update(node.index, e.target.value)
-                            }
-                            className={`absolute bottom-full z-50 hidden max-w-[8rem] rounded border border-white bg-black p-2 group-hover:block ${
-                                node.index == 1
-                                    ? `-left-4`
-                                    : `right-1/2 translate-x-1/2`
-                            }`}
-                        />
+                        {isLeaf ? (
+                            <input
+                                value={node.hash}
+                                onChange={(e) =>
+                                    updateHash(node.index, e.target.value)
+                                }
+                                className={`absolute bottom-full z-50 hidden max-w-[8rem] rounded border border-white bg-black p-2 group-hover:block ${
+                                    node.index == 1
+                                        ? `-left-4`
+                                        : `right-1/2 translate-x-1/2`
+                                }`}
+                            />
+                        ) : (
+                            <div
+                                className={`absolute bottom-full z-50 hidden max-w-[8rem] rounded border border-white bg-black p-2 group-hover:block ${
+                                    node.index == 1
+                                        ? `-left-4`
+                                        : `right-1/2 translate-x-1/2`
+                                }`}
+                            >
+                                {node.hash}
+                            </div>
+                        )}
                     </span>
                 )}
             </div>

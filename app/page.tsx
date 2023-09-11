@@ -2,10 +2,13 @@
 
 import { useState } from 'react';
 import { Drawer, useMmr } from '@/drawer';
+import { Hasher } from '@/drawer/node';
+
+const myHasher: Hasher = (a, b) => a + b.substring(2);
 
 export default function Home() {
     const [showVirtual, setShowVirtual] = useState(false);
-    const { root, append, size, _setRoot } = useMmr(6);
+    const { root, append, size, drawerHashProp } = useMmr(6, myHasher);
 
     return (
         <div>
@@ -32,10 +35,7 @@ export default function Home() {
             <Drawer
                 node={root}
                 size={size}
-                hashUpdateRoot={(r) => {
-                    console.log('newroot is', r);
-                    _setRoot(r);
-                }}
+                hash={drawerHashProp}
                 showVirtual={showVirtual}
                 colorSettings={{
                     standard: '#fff',
