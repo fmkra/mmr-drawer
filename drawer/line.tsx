@@ -1,4 +1,10 @@
-export function Line({ side, color }: { side: 'left' | 'right'; color: string }) {
+export function Line({
+    side,
+    color,
+}: {
+    side: 'left' | 'right';
+    color: string;
+}) {
     return (
         <svg
             version="1.1"
@@ -7,7 +13,7 @@ export function Line({ side, color }: { side: 'left' | 'right'; color: string })
             xmlnsXlink="http://www.w3.org/1999/xlink"
             viewBox="0 0 1 1"
             preserveAspectRatio="none"
-            className="w-full h-full"
+            className="h-full w-full"
         >
             <line
                 fill="none"
@@ -19,5 +25,5 @@ export function Line({ side, color }: { side: 'left' | 'right'; color: string })
                 y2={1}
             />
         </svg>
-    )
+    );
 }

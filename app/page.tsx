@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Drawer, useMmr } from '@/drawer'
+import { useState } from 'react';
+import { Drawer, useMmr } from '@/drawer';
 
 export default function Home() {
-    const [showVirtual, setShowVirtual] = useState(false)
-    const { root, append, size } = useMmr(6)
+    const [showVirtual, setShowVirtual] = useState(false);
+    const { root, append, size } = useMmr(6);
 
     return (
         <div>
             <div className="p-4">
                 <button
-                    className="px-2 py-1 rounded border border-white transition-color hover:bg-white hover:text-black"
+                    className="transition-color rounded border border-white px-2 py-1 hover:bg-white hover:text-black"
                     onClick={append}
                 >
                     Append
@@ -40,5 +40,5 @@ export default function Home() {
                 }}
             />
         </div>
-    )
+    );
 }

@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { Drawer, useMmr } from '@/drawer'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Drawer, useMmr } from '@/drawer';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 function Mmr({ size: s }: { size: number }) {
-    const { root, size } = useMmr(s)
+    const { root, size } = useMmr(s);
 
     return (
         <Drawer
@@ -18,15 +18,15 @@ function Mmr({ size: s }: { size: number }) {
                 peak: '#0f0',
             }}
         />
-    )
+    );
 }
 
 export function Input() {
-    const [size, setSize] = useState<number | null>(null)
-    const [node, setNode] = useState<number | null>(null)
-    const [page, setPage] = useState(0)
+    const [size, setSize] = useState<number | null>(null);
+    const [node, setNode] = useState<number | null>(null);
+    const [page, setPage] = useState(0);
 
-    const router = useRouter()
+    const router = useRouter();
 
     return (
         <div>
@@ -40,12 +40,17 @@ export function Input() {
                         type="number"
                         id="size"
                         onChange={(e) => setSize(parseInt(e.target.value))}
-                        className="block bg-black p-1 border border-white focus:outline-none"
+                        className="block border border-white bg-black p-1 focus:outline-none"
                     />
                     {size !== null && size > 16 && (
-                        <p className="text-red-600">It is not recommended to create more than 16 leaves.</p>
+                        <p className="text-red-600">
+                            It is not recommended to create more than 16 leaves.
+                        </p>
                     )}
-                    <button disabled={size === null || isNaN(size)} onClick={() => setPage(1)}>
+                    <button
+                        disabled={size === null || isNaN(size)}
+                        onClick={() => setPage(1)}
+                    >
                         Next
                     </button>
                 </div>
@@ -57,12 +62,14 @@ export function Input() {
                         type="number"
                         id="node"
                         onChange={(e) => setNode(parseInt(e.target.value))}
-                        className="block bg-black p-1 border border-white focus:outline-none"
+                        className="block border border-white bg-black p-1 focus:outline-none"
                     />
 
                     <button
                         disabled={node === null || isNaN(node)}
-                        onClick={() => router.push(`?size=${size}&node=${node}`)}
+                        onClick={() =>
+                            router.push(`?size=${size}&node=${node}`)
+                        }
                     >
                         Start animation
                     </button>
@@ -71,5 +78,5 @@ export function Input() {
                 </div>
             )}
         </div>
-    )
+    );
 }

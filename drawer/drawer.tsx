@@ -1,70 +1,96 @@
-import { Line } from '@/drawer/line'
-import { Node } from './node'
+import { Line } from '@/drawer/line';
+import { Node } from './node';
 
 interface ColorSettings {
-    standard: string
-    virtual: string
-    peak: string
+    standard: string;
+    virtual: string;
+    peak: string;
 }
 
 interface DrawerProps {
-    node: Node
-    size: number
-    showVirtual: boolean
-    colorSettings: ColorSettings
-    overwriteNodeColor?: Record<number, string>
+    node: Node;
+    size: number;
+    showVirtual: boolean;
+    colorSettings: ColorSettings;
+    overwriteNodeColor?: Record<number, string>;
 }
 
 interface CustomDrawerProps extends DrawerProps {
-    _isParentVirtual?: boolean
+    _isParentVirtual?: boolean;
 }
 
 export function Drawer(props: DrawerProps) {
     return (
         <div className="max-w-full overflow-x-auto overflow-y-hidden">
-            <div className="w-max p-4 -mb-10">
+            <div className="-mb-10 w-max p-4">
                 <CustomDrawer {...props} />
             </div>
         </div>
-    )
+    );
 }
 
 function CustomDrawer({ node, ...props }: CustomDrawerProps) {
-    const isVirtual = node.index > props.size
-    const showNode = props.showVirtual || !isVirtual
+    const isVirtual = node.index > props.size;
+    const showNode = props.showVirtual || !isVirtual;
 
-    const ipv = props._isParentVirtual ?? true
-    const colorType = isVirtual ? 'virtual' : ipv ? 'peak' : 'standard'
-    const overwrittenColor = props.overwriteNodeColor?.[node.index]
-    const nodeColor = overwrittenColor ?? props.colorSettings[colorType]
-    const lineColor = colorType == 'peak' ? props.colorSettings['standard'] : props.colorSettings[colorType]
+    const ipv = props._isParentVirtual ?? true;
+    const colorType = isVirtual ? 'virtual' : ipv ? 'peak' : 'standard';
+    const overwrittenColor = props.overwriteNodeColor?.[node.index];
+    const nodeColor = overwrittenColor ?? props.colorSettings[colorType];
+    const lineColor =
+        colorType == 'peak'
+            ? props.colorSettings['standard']
+            : props.colorSettings[colorType];
 
     return (
-        <div className="w-full grid grid-cols-[1fr_3rem_1fr] grid-rows-[auto_3rem_auto]">
+        <div className="grid w-full grid-cols-[1fr_3rem_1fr] grid-rows-[auto_3rem_auto]">
             <div />
             <div
-                className="flex items-center justify-center rounded-full aspect-square bg-black relative z-10 transition-colors"
-                style={{ borderColor: nodeColor, borderWidth: showNode ? '3px' : '0px' }}
+                className="relative z-10 flex aspect-square items-center justify-center rounded-full bg-black transition-colors"
+                style={{
+                    borderColor: nodeColor,
+                    borderWidth: showNode ? '3px' : '0px',
+                }}
             >
                 <span>{showNode && node.index}</span>
             </div>
             <div />
 
-            <div className="w-full relative">
-                <div className="absolute left-1/2 -right-6 -inset-y-6">
-                    {node.left !== null && showNode && <Line side="left" color={lineColor} />}
+            <div className="relative w-full">
+                <div className="absolute -inset-y-6 -right-6 left-1/2">
+                    {node.left !== null && showNode && (
+                        <Line side="left" color={lineColor} />
+                    )}
                 </div>
             </div>
             <div />
-            <div className="w-full relative">
-                <div className="absolute right-1/2 -left-6 -inset-y-6">
-                    {node.right !== null && showNode && <Line side="right" color={lineColor} />}
+            <div className="relative w-full">
+                <div className="absolute -inset-y-6 -left-6 right-1/2">
+                    {node.right !== null && showNode && (
+                        <Line side="right" color={lineColor} />
+                    )}
                 </div>
             </div>
 
-            {node.left !== null ? <CustomDrawer node={node.left} {...props} _isParentVirtual={isVirtual} /> : <div />}
+            {node.left !== null ? (
+                <CustomDrawer
+                    node={node.left}
+                    {...props}
+                    _isParentVirtual={isVirtual}
+                />
+            ) : (
+                <div />
+            )}
             <div />
-            {node.right !== null ? <CustomDrawer node={node.right} {...props} _isParentVirtual={isVirtual} /> : <div />}
+            {node.right !== null ? (
+                <CustomDrawer
+                    node={node.right}
+                    {...props}
+                    _isParentVirtual={isVirtual}
+                />
+            ) : (
+                <div />
+            )}
         </div>
-    )
+    );
 }
