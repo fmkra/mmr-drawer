@@ -25,7 +25,7 @@ function Hovered({
 }
 
 export function Animation({ size: s, node }: { size: number; node: number }) {
-    const { root, size, virtual } = useMmr(s);
+    const { root, size, virtual } = useMmr(s, () => '');
     const [leftmostLit, setLeftmostLit] = useState(false);
 
     const [subtreeRoot, setSubtreeRoot] = useState(0);
@@ -205,6 +205,7 @@ export function Animation({ size: s, node }: { size: number; node: number }) {
                     standard: '#fff',
                     virtual: '#444',
                     peak: '#fff',
+                    root: '#f00',
                 }}
             />
 

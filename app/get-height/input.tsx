@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 function Mmr({ size: s }: { size: number }) {
-    const { root, size } = useMmr(s);
+    const { root, size } = useMmr(s, () => ``);
 
     return (
         <Drawer
@@ -16,6 +16,7 @@ function Mmr({ size: s }: { size: number }) {
                 standard: '#fff',
                 virtual: '#f00',
                 peak: '#0f0',
+                root: '#00f',
             }}
         />
     );
