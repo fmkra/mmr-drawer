@@ -55,22 +55,21 @@ export function useMmr(initialLeafCount: number, hasher: Hasher) {
                 node = node.left as Node;
             }
         }
-        const pathHashes = [
-            hashes.length == 1
-                ? root.hash
-                : getHashWithError(
-                      hashes[hashes.length - 2][1],
-                      hashes[hashes.length - 1][1],
-                      hasher,
-                  ),
-        ];
+        const pathHashes = [];
+
+        if (hashes.length == 1) pathHashes[0] = root.hash;
+        else
+            pathHashes[hashes.length - 2] = getHashWithError(
+                hashes[hashes.length - 2][1],
+                hashes[hashes.length - 1][1],
+                hasher,
+            );
+
         for (let i = hashes.length - 3; i >= 0; i--) {
-            pathHashes.push(
-                getHashWithError(
-                    hashes[i][1],
-                    pathHashes[pathHashes.length - 1],
-                    hasher,
-                ),
+            pathHashes[i] = getHashWithError(
+                hashes[i][1],
+                pathHashes[i + 1],
+                hasher,
             );
         }
         return [hashes, pathHashes] as [[number, string][], string[]];
