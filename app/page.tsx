@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { Drawer, useMmr } from '@/drawer';
 import { Hasher } from '@/drawer/node';
-
-const myHasher: Hasher = (a, b) => a + b.substring(2);
+import useHasher from '@/drawer/useHasher';
 
 export default function Home() {
     const [showVirtual, setShowVirtual] = useState(false);
-    const { root, append, size, drawerHashProp } = useMmr(6, myHasher);
+    const { selector, hasher } = useHasher();
+
+    const { root, append, size, drawerHashProp } = useMmr(6, hasher);
 
     return (
         <div>
@@ -30,6 +31,7 @@ export default function Home() {
                         Show virtual nodes
                     </label>
                 </div>
+                {selector}
             </div>
 
             <Drawer

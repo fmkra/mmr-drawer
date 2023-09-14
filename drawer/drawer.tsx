@@ -1,6 +1,7 @@
 import { Line } from '@/drawer/line';
-import { Hasher, Node, update } from './node';
+import { Hasher, Node, update, updateAll as _updateAll } from './node';
 import { bitLength } from './utils';
+import { useEffect, useRef } from 'react';
 
 interface ColorSettings {
     standard: string;
@@ -21,15 +22,37 @@ interface DrawerProps {
 }
 
 interface CustomDrawerProps extends DrawerProps {
-    _isParentVirtual?: boolean;
-    _updateHash?: (index: number, hash: string) => void;
+    _isParentVirtual: boolean;
+    _updateIndex: (index: number, hash: string) => void;
 }
 
 export function Drawer(props: DrawerProps) {
+    const updateIndex = (index: number, value: string) => {
+        props.hash?.updateRoot?.(
+            update(
+                props.node,
+                index,
+                value,
+                props.hash.hasher,
+                1,
+                (1 << bitLength(props.size)) - 1,
+            ),
+        );
+    };
+
+    useEffect(() => {
+        if (props.hash)
+            props.hash?.updateRoot?.(_updateAll(props.node, props.hash.hasher));
+    }, [props.hash?.hasher]);
+
     return (
         <div className="max-w-full overflow-x-auto overflow-y-hidden">
-            <div className="-mb-10 w-max p-4">
-                <CustomDrawer {...props} />
+            <div className="-mb-3 w-max px-10 py-4">
+                <CustomDrawer
+                    {...props}
+                    _updateIndex={updateIndex}
+                    _isParentVirtual={true}
+                />
             </div>
         </div>
     );
@@ -49,21 +72,6 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
             ? props.colorSettings['standard']
             : props.colorSettings[colorType];
 
-    const updateHash =
-        props._updateHash ??
-        ((index, value) => {
-            props.hash?.updateRoot?.(
-                update(
-                    node,
-                    index,
-                    value,
-                    props.hash.hasher,
-                    1,
-                    (1 << bitLength(props.size)) - 1,
-                ),
-            );
-        });
-
     return (
         <div className="grid w-full grid-cols-[1fr_3rem_1fr] grid-rows-[auto_3rem_auto]">
             <div />
@@ -74,33 +82,19 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
                     borderWidth: showNode ? '3px' : '0px',
                 }}
             >
-                <span>{showNode && node.index}</span>
+                {showNode && <span className="">{node.index}</span>}
                 {showNode && props.hash && (
-                    <span className="z-12 group absolute top-12 bg-black p-px text-sm">
-                        {node.hash.substring(0, 6)}...
-                        {isLeaf ? (
-                            <input
-                                value={node.hash}
-                                onChange={(e) =>
-                                    updateHash(node.index, e.target.value)
-                                }
-                                className={`absolute bottom-full z-50 hidden max-w-[8rem] rounded border border-white bg-black p-2 group-hover:block ${
-                                    node.index == 1
-                                        ? `-left-4`
-                                        : `right-1/2 translate-x-1/2`
-                                }`}
-                            />
-                        ) : (
-                            <div
-                                className={`absolute bottom-full z-50 hidden max-w-[8rem] rounded border border-white bg-black p-2 group-hover:block ${
-                                    node.index == 1
-                                        ? `-left-4`
-                                        : `right-1/2 translate-x-1/2`
-                                }`}
-                            >
-                                {node.hash}
-                            </div>
-                        )}
+                    <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
+                        {node.hash.substring(0, 8)}
+                        {node.hash.length > 8 && `...`}
+                        <input
+                            value={node.hash}
+                            disabled={!isLeaf}
+                            onChange={(e) =>
+                                props._updateIndex(node.index, e.target.value)
+                            }
+                            className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
+                        />
                     </span>
                 )}
             </div>
@@ -127,7 +121,6 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
                     node={node.left}
                     {...props}
                     _isParentVirtual={isVirtual}
-                    _updateHash={updateHash}
                 />
             ) : (
                 <div />
@@ -137,7 +130,6 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
                 <CustomDrawer
                     node={node.right}
                     {...props}
-                    _updateHash={updateHash}
                     _isParentVirtual={isVirtual}
                 />
             ) : (

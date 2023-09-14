@@ -7,6 +7,18 @@ export interface Node {
 
 export type Hasher = (left: string, right: string) => string;
 
+export function getHashWithError(
+    left: string,
+    right: string,
+    hasher: Hasher,
+): string {
+    try {
+        return hasher(left, right);
+    } catch (e) {
+        return 'error';
+    }
+}
+
 export function getTree(
     startIndex: number,
     height: number,
@@ -26,7 +38,7 @@ export function getTree(
         index: rightSubtree.index + 1,
         left: leftSubtree,
         right: rightSubtree,
-        hash: hasher(leftSubtree.hash, rightSubtree.hash),
+        hash: getHashWithError(leftSubtree.hash, rightSubtree.hash, hasher),
     };
     return rootNode;
 }
@@ -58,7 +70,11 @@ export function update(
         return {
             ...root,
             left: newChild,
-            hash: hasher(newChild.hash, (root.right as Node).hash),
+            hash: getHashWithError(
+                newChild.hash,
+                (root.right as Node).hash,
+                hasher,
+            ),
         };
     } else {
         const newChild = update(
@@ -72,7 +88,23 @@ export function update(
         return {
             ...root,
             right: newChild,
-            hash: hasher((root.left as Node).hash, newChild.hash),
+            hash: getHashWithError(
+                (root.left as Node).hash,
+                newChild.hash,
+                hasher,
+            ),
         };
     }
+}
+
+export function updateAll(root: Node, hasher: Hasher): Node {
+    if (root.left === null || root.right === null) return root;
+    const left = updateAll(root.left, hasher);
+    const right = updateAll(root.right, hasher);
+    return {
+        ...root,
+        left,
+        right,
+        hash: getHashWithError(left.hash, right.hash, hasher),
+    };
 }

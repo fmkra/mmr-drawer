@@ -1,10 +1,10 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
-import { Hasher, Node, getTree } from './node';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Hasher, Node, getHashWithError, getTree } from './node';
 import { bitLength, leafIndexToMmrIndex } from './utils';
 
-export function useMmr(initialLeafCount: number, hasher: Hasher = () => '') {
+export function useMmr(initialLeafCount: number, hasher: Hasher) {
     const [leafCount, setLeafCount] = useState(() =>
         initialLeafCount < 1 ? 1 : initialLeafCount,
     );
@@ -27,7 +27,7 @@ export function useMmr(initialLeafCount: number, hasher: Hasher = () => '') {
                 index: rightSubtree.index + 1,
                 left: root,
                 right: rightSubtree,
-                hash: hasher(root.hash, rightSubtree.hash),
+                hash: getHashWithError(root.hash, rightSubtree.hash, hasher),
             };
             setRoot(newRoot);
             setHeight(height + 1);
