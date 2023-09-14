@@ -39,20 +39,42 @@ export function useMmr(initialLeafCount: number, hasher: Hasher) {
         setSize(newSize);
     };
 
-    const peaks = useMemo(() => {
-        let x = size;
-        let lastPeak = 0;
-        const peaks = [];
-        for (let i = bitLength(x) - 1; i > 0; i--) {
-            const peakSize = (1 << i) - 1;
-            if (peakSize <= x) {
-                lastPeak += peakSize;
-                peaks.push(lastPeak);
-                x -= peakSize;
+    const peaks: [[number, string][], string[]] = useMemo(() => {
+        let node = root;
+        const hashes: [number, string][] = [];
+        if (node.index === size)
+            return [[[root.index, root.hash]], []] as [
+                [number, string][],
+                string[],
+            ];
+        while (node.left !== null) {
+            if (node.left.index <= size) {
+                hashes.push([node.left.index, node.left.hash]);
+                node = node.right as Node;
+            } else {
+                node = node.left as Node;
             }
         }
-        return peaks;
-    }, [size]);
+        const pathHashes = [
+            hashes.length == 1
+                ? root.hash
+                : getHashWithError(
+                      hashes[hashes.length - 2][1],
+                      hashes[hashes.length - 1][1],
+                      hasher,
+                  ),
+        ];
+        for (let i = hashes.length - 3; i >= 0; i--) {
+            pathHashes.push(
+                getHashWithError(
+                    hashes[i][1],
+                    pathHashes[pathHashes.length - 1],
+                    hasher,
+                ),
+            );
+        }
+        return [hashes, pathHashes] as [[number, string][], string[]];
+    }, [root, size, hasher]);
 
     return {
         root,

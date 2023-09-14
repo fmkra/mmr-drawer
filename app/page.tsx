@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Drawer, useMmr } from '@/drawer';
 import useHasher from '@/drawer/useHasher';
 
@@ -8,11 +8,7 @@ export default function Home() {
     const [showVirtual, setShowVirtual] = useState(false);
     const { selector, hasher } = useHasher();
 
-    const { root, append, size, peaks, drawerHashProp } = useMmr(6, hasher);
-
-    useEffect(() => {
-        console.log(peaks);
-    }, [peaks]);
+    const { root, append, size, peaks, drawerHashProp } = useMmr(7, hasher);
 
     return (
         <div>

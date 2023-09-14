@@ -22,7 +22,7 @@ interface CommonProps {
     overwriteNodeColor?: Record<number, string>;
 }
 interface DrawerProps extends CommonProps {
-    peaks?: number[];
+    peaks?: [[number, string][], string[]];
 }
 interface CustomDrawerProps extends CommonProps {
     _isParentVirtual: boolean;
@@ -153,13 +153,16 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
 }
 
 interface PeakDrawerProps {
-    peaks: number[];
+    peaks: [[number, string][], string[]];
     start: number;
     colorSettings: ColorSettings;
 }
 
 function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
-    if (start == peaks.length - 1)
+    const [index, hash] = peaks[0][start];
+    const parentHash = peaks[1][start];
+
+    if (start == peaks[0].length - 1)
         return (
             <div
                 className={`grid w-full grid-cols-[6rem_3rem_1fr] grid-rows-[auto_3rem_auto] ${
@@ -170,10 +173,24 @@ function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
                 <div
                     className="relative z-10 mx-auto flex aspect-square w-12 items-center justify-center rounded-full border-[3px] bg-black transition-colors"
                     style={{
-                        borderColor: colorSettings.peak,
+                        borderColor:
+                            colorSettings[start == 0 ? `root` : `peak`],
                     }}
                 >
-                    <span>{peaks[start]}</span>
+                    {start == 0 ? (
+                        <span className="text-xs">root</span>
+                    ) : (
+                        <span>{index}</span>
+                    )}
+                    <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
+                        {hash.substring(0, 8)}
+                        {hash.length > 8 && `...`}
+                        <input
+                            value={hash}
+                            disabled
+                            className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
+                        />
+                    </span>
                 </div>
             </div>
         );
@@ -190,7 +207,18 @@ function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
                     borderColor:
                         colorSettings[start == 0 ? `root` : `standard`],
                 }}
-            />
+            >
+                {start == 0 && <span className="text-xs">root</span>}
+                <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
+                    {parentHash.substring(0, 8)}
+                    {parentHash.length > 8 && `...`}
+                    <input
+                        value={parentHash}
+                        disabled
+                        className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
+                    />
+                </span>
+            </div>
             <div />
 
             <div className="relative w-full">
@@ -210,7 +238,16 @@ function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
                     borderColor: colorSettings.peak,
                 }}
             >
-                <span>{peaks[start]}</span>
+                <span>{index}</span>
+                <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
+                    {hash.substring(0, 8)}
+                    {hash.length > 8 && `...`}
+                    <input
+                        value={hash}
+                        disabled
+                        className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
+                    />
+                </span>
             </div>
             <div />
             <PeakDrawer {...{ peaks, colorSettings }} start={start + 1} />
