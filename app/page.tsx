@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Drawer, useMmr } from '@/drawer';
-import { Hasher } from '@/drawer/node';
 import useHasher from '@/drawer/useHasher';
 
 export default function Home() {
     const [showVirtual, setShowVirtual] = useState(false);
     const { selector, hasher } = useHasher();
 
-    const { root, append, size, drawerHashProp } = useMmr(6, hasher);
+    const { root, append, size, peaks, drawerHashProp } = useMmr(6, hasher);
+
+    useEffect(() => {
+        console.log(peaks);
+    }, [peaks]);
 
     return (
         <div>
@@ -38,11 +41,13 @@ export default function Home() {
                 node={root}
                 size={size}
                 hash={drawerHashProp}
+                peaks={peaks}
                 showVirtual={showVirtual}
                 colorSettings={{
                     standard: '#fff',
-                    virtual: '#f00',
+                    virtual: '#444',
                     peak: '#0f0',
+                    root: '#f00',
                 }}
             />
         </div>

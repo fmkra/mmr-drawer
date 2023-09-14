@@ -7,9 +7,10 @@ interface ColorSettings {
     standard: string;
     virtual: string;
     peak: string;
+    root: string;
 }
 
-interface DrawerProps {
+interface CommonProps {
     node: Node;
     size: number;
     showVirtual: boolean;
@@ -20,13 +21,15 @@ interface DrawerProps {
     colorSettings: ColorSettings;
     overwriteNodeColor?: Record<number, string>;
 }
-
-interface CustomDrawerProps extends DrawerProps {
+interface DrawerProps extends CommonProps {
+    peaks?: number[];
+}
+interface CustomDrawerProps extends CommonProps {
     _isParentVirtual: boolean;
     _updateIndex: (index: number, hash: string) => void;
 }
 
-export function Drawer(props: DrawerProps) {
+export function Drawer({ peaks, ...props }: DrawerProps) {
     const updateIndex = (index: number, value: string) => {
         props.hash?.updateRoot?.(
             update(
@@ -53,6 +56,16 @@ export function Drawer(props: DrawerProps) {
                     _updateIndex={updateIndex}
                     _isParentVirtual={true}
                 />
+                {peaks !== undefined && (
+                    <>
+                        <p className="w-60 py-4 text-center">Peaks</p>
+                        <PeakDrawer
+                            peaks={peaks}
+                            start={0}
+                            colorSettings={props.colorSettings}
+                        />
+                    </>
+                )}
             </div>
         </div>
     );
@@ -82,8 +95,8 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
                     borderWidth: showNode ? '3px' : '0px',
                 }}
             >
-                {showNode && <span className="">{node.index}</span>}
-                {showNode && props.hash && (
+                {showNode && <span>{node.index}</span>}
+                {showNode && props.hash && !isVirtual && (
                     <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
                         {node.hash.substring(0, 8)}
                         {node.hash.length > 8 && `...`}
@@ -135,6 +148,72 @@ function CustomDrawer({ node, ...props }: CustomDrawerProps) {
             ) : (
                 <div />
             )}
+        </div>
+    );
+}
+
+interface PeakDrawerProps {
+    peaks: number[];
+    start: number;
+    colorSettings: ColorSettings;
+}
+
+function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
+    if (start == peaks.length - 1)
+        return (
+            <div
+                className={`grid w-full grid-cols-[6rem_3rem_1fr] grid-rows-[auto_3rem_auto] ${
+                    start != 0 ? `translate-x-[-4.5rem]` : ``
+                }`}
+            >
+                <div />
+                <div
+                    className="relative z-10 mx-auto flex aspect-square w-12 items-center justify-center rounded-full border-[3px] bg-black transition-colors"
+                    style={{
+                        borderColor: colorSettings.peak,
+                    }}
+                >
+                    <span>{peaks[start]}</span>
+                </div>
+            </div>
+        );
+    return (
+        <div
+            className={`grid w-full grid-cols-[6rem_3rem_1fr] grid-rows-[auto_3rem_auto] ${
+                start != 0 ? `translate-x-[-4.5rem]` : ``
+            }`}
+        >
+            <div />
+            <div
+                className="relative z-10 flex aspect-square items-center justify-center rounded-full border-[3px] bg-black transition-colors"
+                style={{
+                    borderColor:
+                        colorSettings[start == 0 ? `root` : `standard`],
+                }}
+            />
+            <div />
+
+            <div className="relative w-full">
+                <div className="absolute -inset-y-6 -right-6 left-1/2">
+                    <Line side="left" color={colorSettings.standard} />
+                </div>
+            </div>
+            <div />
+            <div className="relative w-24">
+                <div className="absolute -inset-y-6 -left-6 right-1/2">
+                    <Line side="right" color={colorSettings.standard} />
+                </div>
+            </div>
+            <div
+                className="relative z-10 mx-auto flex aspect-square w-12 items-center justify-center rounded-full border-[3px] bg-black transition-colors"
+                style={{
+                    borderColor: colorSettings.peak,
+                }}
+            >
+                <span>{peaks[start]}</span>
+            </div>
+            <div />
+            <PeakDrawer {...{ peaks, colorSettings }} start={start + 1} />
         </div>
     );
 }

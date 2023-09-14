@@ -39,10 +39,26 @@ export function useMmr(initialLeafCount: number, hasher: Hasher) {
         setSize(newSize);
     };
 
+    const peaks = useMemo(() => {
+        let x = size;
+        let lastPeak = 0;
+        const peaks = [];
+        for (let i = bitLength(x) - 1; i > 0; i--) {
+            const peakSize = (1 << i) - 1;
+            if (peakSize <= x) {
+                lastPeak += peakSize;
+                peaks.push(lastPeak);
+                x -= peakSize;
+            }
+        }
+        return peaks;
+    }, [size]);
+
     return {
         root,
         size,
         append,
+        peaks,
         virtual: {
             leafCount: leafCapacity,
             size: sizeCapacity,
