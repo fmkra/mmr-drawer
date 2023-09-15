@@ -41,7 +41,7 @@ export function useMmr(initialLeafCount: number, hasher: Hasher) {
 
     const peaks: [[number, string][], string[]] = useMemo(() => {
         let node = root;
-        const hashes: [number, string][] = [];
+        const hashes: [number, string][] = [[0, `${size}`]];
         if (node.index === size)
             return [[[root.index, root.hash]], []] as [
                 [number, string][],

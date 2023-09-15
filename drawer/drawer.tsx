@@ -8,6 +8,7 @@ interface ColorSettings {
     virtual: string;
     peak: string;
     root: string;
+    size?: string;
 }
 
 interface CommonProps {
@@ -23,13 +24,14 @@ interface CommonProps {
 }
 interface DrawerProps extends CommonProps {
     peaks?: [[number, string][], string[]];
+    hashWithSize?: boolean;
 }
 interface CustomDrawerProps extends CommonProps {
     _isParentVirtual: boolean;
     _updateIndex: (index: number, hash: string) => void;
 }
 
-export function Drawer({ peaks, ...props }: DrawerProps) {
+export function Drawer({ peaks, hashWithSize, ...props }: DrawerProps) {
     const updateIndex = (index: number, value: string) => {
         props.hash?.updateRoot?.(
             update(
@@ -66,8 +68,9 @@ export function Drawer({ peaks, ...props }: DrawerProps) {
                             <p className="w-12 py-4 text-center">Peaks</p>
                             <PeakDrawer
                                 peaks={peaks}
-                                start={0}
+                                start={hashWithSize ? 0 : 1}
                                 colorSettings={props.colorSettings}
+                                isRoot
                             />
                         </>
                     )}
@@ -162,9 +165,10 @@ interface PeakDrawerProps {
     peaks: [[number, string][], string[]];
     start: number;
     colorSettings: ColorSettings;
+    isRoot?: boolean;
 }
 
-function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
+function PeakDrawer({ peaks, start, colorSettings, isRoot }: PeakDrawerProps) {
     const [index, hash] = peaks[0][start];
     const parentHash = peaks[1][start];
 
@@ -173,10 +177,10 @@ function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
             <div
                 className="relative z-10 flex aspect-square w-12 items-center justify-center rounded-full border-[3px] bg-black transition-colors"
                 style={{
-                    borderColor: colorSettings[start == 0 ? `root` : `peak`],
+                    borderColor: colorSettings[isRoot ? `root` : `peak`],
                 }}
             >
-                {start == 0 ? (
+                {isRoot ? (
                     <span className="text-xs">root</span>
                 ) : (
                     <span>{index}</span>
@@ -198,11 +202,10 @@ function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
             <div
                 className="relative z-10 flex aspect-square w-12 items-center justify-center rounded-full border-[3px] bg-black transition-colors"
                 style={{
-                    borderColor:
-                        colorSettings[start == 0 ? `root` : `standard`],
+                    borderColor: colorSettings[isRoot ? `root` : `standard`],
                 }}
             >
-                {start == 0 && <span className="text-xs">root</span>}
+                {isRoot && <span className="text-xs">root</span>}
                 <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
                     {parentHash.substring(0, 8)}
                     {parentHash.length > 8 && `...`}
@@ -225,10 +228,14 @@ function PeakDrawer({ peaks, start, colorSettings }: PeakDrawerProps) {
             <div
                 className="absolute left-[-4.5rem] top-24 z-10 flex aspect-square w-12 items-center justify-center rounded-full border-[3px] bg-black transition-colors"
                 style={{
-                    borderColor: colorSettings.peak,
+                    borderColor: colorSettings[index != 0 ? `peak` : `size`],
                 }}
             >
-                <span>{index}</span>
+                {index !== 0 ? (
+                    <span>{index}</span>
+                ) : (
+                    <span className="text-xs">size</span>
+                )}
                 <span className="group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
                     {hash.substring(0, 8)}
                     {hash.length > 8 && `...`}
