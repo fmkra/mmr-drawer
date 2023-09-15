@@ -42,11 +42,13 @@ export function useMmr(initialLeafCount: number, hasher: Hasher) {
     const peaks: [[number, string][], string[]] = useMemo(() => {
         let node = root;
         const hashes: [number, string][] = [[0, `${size}`]];
-        if (node.index === size)
-            return [[[root.index, root.hash]], []] as [
-                [number, string][],
-                string[],
+        if (node.index === size) {
+            hashes.push([root.index, root.hash]);
+            return [
+                hashes,
+                [getHashWithError(hashes[0][1], hashes[1][1], hasher)],
             ];
+        }
         while (node.left !== null) {
             if (node.left.index <= size) {
                 hashes.push([node.left.index, node.left.hash]);
