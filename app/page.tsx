@@ -9,16 +9,25 @@ export default function Home() {
     const [hashWithSize, setHashWithSize] = useState(true);
 
     const { selector, hasher } = useHasher();
-    const { root, append, size, peaks, drawerHashProp } = useMmr(7, hasher);
+    const { root, append, reset, size, peaks, drawerHashProp } = useMmr(
+        6,
+        hasher,
+    );
 
     return (
         <div>
             <div className="p-4">
                 <button
-                    className="transition-color rounded border border-white px-2 py-1 hover:bg-white hover:text-black"
+                    className="mx-1 rounded border border-white px-2 py-1 transition-colors hover:bg-white hover:text-black"
                     onClick={append}
                 >
                     Append
+                </button>
+                <button
+                    className="mx-1 rounded border border-white px-2 py-1 transition-colors hover:border-red-500 hover:bg-red-500"
+                    onClick={reset}
+                >
+                    Reset
                 </button>
                 <div className="my-2">
                     <input
