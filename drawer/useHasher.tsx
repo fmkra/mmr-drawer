@@ -15,13 +15,13 @@ export default function useHashers() {
         null,
     );
 
-    const [currentHasher, setCurrentHasher] = useState<number>(0);
-    const hasher: Hasher = useMemo(() => {
-        if (currentHasher == 0) {
+    const [currentHasher, setCurrentHasher] = useState<number>(1);
+    const hasher: Hasher | undefined = useMemo(() => {
+        if (currentHasher == 1) {
             return (a, b) => keccakHasher.hash([a, b]);
-        } else if (currentHasher == 1) {
+        } else if (currentHasher == 2) {
             return (a, b) => poseidonHasher?.hash([a, b]) ?? 'loading';
-        } else {
+        } else if (currentHasher == 3) {
             return (a, b) => starkPoseidonHasher.hash([a, b]);
         }
     }, [currentHasher, poseidonHasher, keccakHasher, starkPoseidonHasher]);
@@ -40,9 +40,10 @@ export default function useHashers() {
                 }}
                 value={currentHasher}
             >
-                <option value={0}>Keccak</option>
-                <option value={1}>Poseidon</option>
-                <option value={2}>Stark Poseidon</option>
+                <option value={0}>None</option>
+                <option value={1}>Keccak</option>
+                <option value={2}>Poseidon</option>
+                <option value={3}>Stark Poseidon</option>
             </select>
         </>
     );
