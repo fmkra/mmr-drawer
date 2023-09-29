@@ -67,6 +67,7 @@ export function Drawer({ peaks, hashWithSize, ...props }: DrawerProps) {
                         <>
                             <p className="w-12 py-4 text-center">Peaks</p>
                             <PeakDrawer
+                                showHash={props.hash !== undefined}
                                 peaks={peaks}
                                 start={hashWithSize ? 0 : 1}
                                 colorSettings={props.colorSettings}
@@ -166,9 +167,16 @@ interface PeakDrawerProps {
     start: number;
     colorSettings: ColorSettings;
     isRoot?: boolean;
+    showHash: boolean;
 }
 
-function PeakDrawer({ peaks, start, colorSettings, isRoot }: PeakDrawerProps) {
+function PeakDrawer({
+    peaks,
+    start,
+    colorSettings,
+    isRoot,
+    showHash,
+}: PeakDrawerProps) {
     const [index, hash] = peaks[0][start];
     const parentHash = peaks[1][start];
 
@@ -185,15 +193,17 @@ function PeakDrawer({ peaks, start, colorSettings, isRoot }: PeakDrawerProps) {
                 ) : (
                     <span>{index}</span>
                 )}
-                <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
-                    {hash.substring(0, 8)}
-                    {hash.length > 8 && `...`}
-                    <input
-                        value={hash}
-                        disabled
-                        className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
-                    />
-                </span>
+                {showHash && (
+                    <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
+                        {hash.substring(0, 8)}
+                        {hash.length > 8 && `...`}
+                        <input
+                            value={hash}
+                            disabled
+                            className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
+                        />
+                    </span>
+                )}
             </div>
         );
 
@@ -206,15 +216,17 @@ function PeakDrawer({ peaks, start, colorSettings, isRoot }: PeakDrawerProps) {
                 }}
             >
                 {isRoot && <span className="text-xs">root</span>}
-                <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
-                    {parentHash.substring(0, 8)}
-                    {parentHash.length > 8 && `...`}
-                    <input
-                        value={parentHash}
-                        disabled
-                        className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
-                    />
-                </span>
+                {showHash && (
+                    <span className="z-12 group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
+                        {parentHash.substring(0, 8)}
+                        {parentHash.length > 8 && `...`}
+                        <input
+                            value={parentHash}
+                            disabled
+                            className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
+                        />
+                    </span>
+                )}
             </div>
 
             <div className="absolute -left-12 top-6 h-24 w-[4.5rem]">
@@ -236,19 +248,24 @@ function PeakDrawer({ peaks, start, colorSettings, isRoot }: PeakDrawerProps) {
                 ) : (
                     <span className="text-xs">size</span>
                 )}
-                <span className="group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
-                    {hash.substring(0, 8)}
-                    {hash.length > 8 && `...`}
-                    <input
-                        value={hash}
-                        disabled
-                        className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
-                    />
-                </span>
+                {showHash && (
+                    <span className="group absolute top-12 rounded bg-neutral-800 p-1 text-sm">
+                        {hash.substring(0, 8)}
+                        {hash.length > 8 && `...`}
+                        <input
+                            value={hash}
+                            disabled
+                            className="absolute bottom-full right-1/2 z-50 hidden max-w-[8rem] translate-x-1/2 rounded border border-white bg-black p-2 text-center group-hover:block"
+                        />
+                    </span>
+                )}
             </div>
 
             <div className="-mt-6 ml-[4.5rem]">
-                <PeakDrawer {...{ peaks, colorSettings }} start={start + 1} />
+                <PeakDrawer
+                    {...{ peaks, colorSettings, showHash }}
+                    start={start + 1}
+                />
             </div>
         </div>
     );
