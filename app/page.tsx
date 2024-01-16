@@ -1,13 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Drawer, useMmr } from '@/drawer';
 import useHasher from '@/drawer/useHasher';
 
 export default function Home() {
     const [showVirtual, setShowVirtual] = useState(false);
     const [hashWithSize, setHashWithSize] = useState(true);
-    const [appendValue, setAppendValue] = useState('0x0');
+
+    const [appendValueStr, setAppendValueStr] = useState('0x0');
+    const appendValues = useMemo(
+        () => appendValueStr.split(',').filter((v) => v.trim() !== ''),
+        [appendValueStr],
+    );
+    const appendValuesValid = useMemo(
+        () => appendValues.every((v) => isFinite(Number(v))),
+        [appendValues],
+    );
 
     const { selector, hasher } = useHasher();
     const { root, append, reset, size, peaks, drawerHashProp } = useMmr(
@@ -21,17 +30,18 @@ export default function Home() {
                 <input
                     className={
                         'h-full rounded border bg-black px-2 py-1.5 ' +
-                        (isFinite(Number(appendValue))
-                            ? 'border-white'
-                            : 'border-red-500')
+                        (appendValuesValid ? 'border-white' : 'border-red-500')
                     }
                     type="text"
-                    value={appendValue}
-                    onChange={(e) => setAppendValue(e.target.value)}
+                    value={appendValueStr}
+                    onChange={(e) => setAppendValueStr(e.target.value)}
                 />
                 <button
-                    className="mx-1 rounded border border-white px-2 py-1 transition-colors hover:bg-white hover:text-black"
-                    onClick={() => append(appendValue)}
+                    className={
+                        'mx-1 rounded border px-2 py-1 transition-colors hover:bg-white hover:text-black ' +
+                        (appendValuesValid ? 'border-white' : 'border-red-500')
+                    }
+                    onClick={() => append(appendValues)}
                 >
                     Append
                 </button>

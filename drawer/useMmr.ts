@@ -30,29 +30,36 @@ export function useMmr(initialLeafCount: number, hasher?: Hasher) {
         setSizeCapacity(1);
     };
 
-    const append = (value?: string) => {
-        let newCapacity = sizeCapacity;
-        let newRoot = root;
-        if (leafCount == leafCapacity) {
-            const rightSubtree = getTree(sizeCapacity + 1, height, hash);
-            newRoot = {
-                index: rightSubtree.index + 1,
-                left: root,
-                right: rightSubtree,
-                hash: getHashWithError(root.hash, rightSubtree.hash, hash),
-            };
-            setHeight(height + 1);
-            setLeafCapacity(2 * leafCapacity);
-            newCapacity = 2 * sizeCapacity + 1;
-            setSizeCapacity(newCapacity);
+    const append = (values: string[]) => {
+        let cLeafCount = leafCount;
+        let cLeafCapacity = leafCapacity;
+        let cSizeCapacity = sizeCapacity;
+        let cHeight = height;
+        let cRoot = root;
+        let cSize = size;
+        for (const value of values) {
+            if (cLeafCount == cLeafCapacity) {
+                const rightSubtree = getTree(cSizeCapacity + 1, cHeight, hash);
+                cRoot = {
+                    index: rightSubtree.index + 1,
+                    left: cRoot,
+                    right: rightSubtree,
+                    hash: getHashWithError(cRoot.hash, rightSubtree.hash, hash),
+                };
+                cHeight++;
+                cLeafCapacity = 2 * cLeafCapacity;
+                cSizeCapacity = 2 * cSizeCapacity + 1;
+            }
+            cLeafCount++;
+            cSize = leafIndexToMmrIndex(cLeafCount + 1) - 1;
+            cRoot = update(cRoot, cSize, value, hash, 1, cSizeCapacity);
         }
-        setLeafCount((x) => x + 1);
-        const newSize = leafIndexToMmrIndex(leafCount + 2) - 1;
-        setSize(newSize);
-
-        if (value)
-            setRoot(update(newRoot, newSize, value, hash, 1, newCapacity));
-        else setRoot(newRoot);
+        setLeafCount(cLeafCount);
+        setSize(cSize);
+        setHeight(cHeight);
+        setRoot(cRoot);
+        setLeafCapacity(cLeafCapacity);
+        setSizeCapacity(cSizeCapacity);
     };
 
     const peaks: [[number, string][], string[]] = useMemo(() => {
