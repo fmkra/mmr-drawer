@@ -7,6 +7,7 @@ import useHasher from '@/drawer/useHasher';
 export default function Home() {
     const [showVirtual, setShowVirtual] = useState(false);
     const [hashWithSize, setHashWithSize] = useState(true);
+    const [appendValue, setAppendValue] = useState('0x0');
 
     const { selector, hasher } = useHasher();
     const { root, append, reset, size, peaks, drawerHashProp } = useMmr(
@@ -17,9 +18,20 @@ export default function Home() {
     return (
         <div>
             <div className="p-4">
+                <input
+                    className={
+                        'h-full rounded border bg-black px-2 py-1.5 ' +
+                        (isFinite(Number(appendValue))
+                            ? 'border-white'
+                            : 'border-red-500')
+                    }
+                    type="text"
+                    value={appendValue}
+                    onChange={(e) => setAppendValue(e.target.value)}
+                />
                 <button
                     className="mx-1 rounded border border-white px-2 py-1 transition-colors hover:bg-white hover:text-black"
-                    onClick={append}
+                    onClick={() => append(appendValue)}
                 >
                     Append
                 </button>

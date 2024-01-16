@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Hasher, Node, getHashWithError, getTree } from './node';
+import { Hasher, Node, getHashWithError, getTree, update } from './node';
 import { bitLength, leafIndexToMmrIndex } from './utils';
 
 export function useMmr(initialLeafCount: number, hasher?: Hasher) {
@@ -30,23 +30,29 @@ export function useMmr(initialLeafCount: number, hasher?: Hasher) {
         setSizeCapacity(1);
     };
 
-    const append = () => {
+    const append = (value?: string) => {
+        let newCapacity = sizeCapacity;
+        let newRoot = root;
         if (leafCount == leafCapacity) {
             const rightSubtree = getTree(sizeCapacity + 1, height, hash);
-            const newRoot = {
+            newRoot = {
                 index: rightSubtree.index + 1,
                 left: root,
                 right: rightSubtree,
                 hash: getHashWithError(root.hash, rightSubtree.hash, hash),
             };
-            setRoot(newRoot);
             setHeight(height + 1);
             setLeafCapacity(2 * leafCapacity);
-            setSizeCapacity(2 * sizeCapacity + 1);
+            newCapacity = 2 * sizeCapacity + 1;
+            setSizeCapacity(newCapacity);
         }
         setLeafCount((x) => x + 1);
         const newSize = leafIndexToMmrIndex(leafCount + 2) - 1;
         setSize(newSize);
+
+        if (value)
+            setRoot(update(newRoot, newSize, value, hash, 1, newCapacity));
+        else setRoot(newRoot);
     };
 
     const peaks: [[number, string][], string[]] = useMemo(() => {
