@@ -103,6 +103,7 @@ export function useMmr(initialLeafCount: number, hasher?: Hasher) {
     return {
         root,
         size,
+        leafCount,
         append,
         reset,
         peaks,

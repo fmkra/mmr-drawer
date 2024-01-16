@@ -19,10 +19,8 @@ export default function Home() {
     );
 
     const { selector, hasher } = useHasher();
-    const { root, append, reset, size, peaks, drawerHashProp } = useMmr(
-        6,
-        hasher,
-    );
+    const { root, append, reset, size, leafCount, peaks, drawerHashProp } =
+        useMmr(6, hasher);
 
     return (
         <div>
@@ -74,6 +72,13 @@ export default function Home() {
                     </label>
                 </div>
                 {selector}
+                <div className="mt-2 grid w-max grid-cols-2 gap-x-2">
+                    <p>Leaf count:</p>
+                    <p>{leafCount}</p>
+
+                    <p>Size (elementsCount):</p>
+                    <p>{size}</p>
+                </div>
             </div>
 
             <Drawer
